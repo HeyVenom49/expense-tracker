@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Expense Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header class="header">
+        <p class="header-kicker">Live money pulse</p>
+        <h1>Smart Expense & Subscription Tracker</h1>
+        <p class="header-copy">Track daily spending, spot risky budget drift fast, and make the warning state impossible to miss.</p>
+    </header>
+
+    <main id="main">
+
+        <!-- Dashboard -->
+        <section id="dashboard">
+
+            <div class="card card-expense">
+                <h3>Total Expense</h3>
+                <p id="total-expense">₹0</p>
+            </div>
+
+            <div class="card card-budget" id="budget-card">
+                <h3>Total Budget</h3>
+                <p id="total-budget">₹0</p>
+                <div class="budget-actions">
+                    <input type="number" id="budget-input" placeholder="Set Budget">
+                    <button type="button" id="set-budget-btn">Set Budget</button>
+                </div>
+            </div>
+
+            <div class="card card-subscription">
+                <h3>Total Subscriptions</h3>
+                <p id="total-subscription">₹0</p>
+            </div>
+
+        </section>
+
+        <!-- Expense Module -->
+        <section id="expenses">
+
+            <h2>Add Expense</h2>
+
+            <form id="expense-form">
+
+                <label for="expense-title">Expense Title</label>
+                <input type="text" id="expense-title" placeholder="Enter title" required>
+
+                <label for="expense-amount">Amount</label>
+                <input type="number" id="expense-amount" placeholder="Enter amount" required>
+
+                <label for="expense-category">Category</label>
+                <select id="expense-category">
+                    <option value="food">Food</option>
+                    <option value="travel">Travel</option>
+                    <option value="shopping">Shopping</option>
+                </select>
+
+                <label for="expense-date">Date</label>
+                <input type="date" id="expense-date">
+
+                <button type="submit">Add Expense</button>
+
+            </form>
+
+            <h2>Expense List</h2>
+            <ul id="expense-list"></ul>
+
+        </section>
+
+        <!-- Subscription Module -->
+        <section id="subscriptions">
+
+            <h2>Add Subscription</h2>
+
+            <form id="subscription-form">
+
+                <label for="subscription-name">Service Name</label>
+                <input type="text" id="subscription-name" placeholder="e.g. Netflix" required>
+
+                <label for="subscription-amount">Amount</label>
+                <input type="number" id="subscription-amount" placeholder="Enter amount" required>
+
+                <label for="billing-cycle">Billing Cycle</label>
+                <select id="billing-cycle">
+                    <option value="monthly">Monthly</option>
+                    <option value="yearly">Yearly</option>
+                </select>
+
+                <button type="submit">Add Subscription</button>
+
+            </form>
+
+            <h2>Subscription List</h2>
+            <ul id="subscription-list"></ul>
+
+        </section>
+
+    </main>
+
+    <script type="module" src="app.js"></script>
+
+</body>
+
+</html>
