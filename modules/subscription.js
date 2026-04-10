@@ -2,6 +2,31 @@ import { BILLING_CYCLES } from "../utils/constants.js";
 
 let subscriptionEditId = null;
 
+const subscriptionForm = document.querySelector("#subscription-form");
+const subscriptionNameInput = document.querySelector("#subscription-name");
+const subscriptionAmountInput = document.querySelector("#subscription-amount");
+const billingCycleInput = document.querySelector("#billing-cycle");
+const subscriptionSubmitButton = subscriptionForm.querySelector(
+  'button[type="submit"]',
+);
+
+function setSubscriptionFormMode(isEditing) {
+  subscriptionForm.dataset.mode = isEditing ? "editing" : "create";
+  subscriptionSubmitButton.textContent = isEditing
+    ? "Save Subscription"
+    : "Add Subscription";
+}
+
+function resetSubscriptionForm() {
+  subscriptionForm.reset();
+  subscriptionEditId = null;
+  setSubscriptionFormMode(false);
+}
+
+export function initSubscriptionForm() {
+  setSubscriptionFormMode(false);
+}
+
 export function handleSubscriptionSubmit(e, deps) {
   e.preventDefault();
 
@@ -14,14 +39,12 @@ export function handleSubscriptionSubmit(e, deps) {
 
   const data = getSubscription();
 
-  const subscriptionName = document.querySelector("#subscription-name").value;
-  const subscriptionAmount = Number(
-    document.querySelector("#subscription-amount").value,
-  );
-  const billingCycle = document.querySelector("#billing-cycle").value;
+  const subscriptionName = subscriptionNameInput.value.trim();
+  const subscriptionAmount = Number(subscriptionAmountInput.value);
+  const billingCycle = billingCycleInput.value;
 
   if (
-    subscriptionName.trim() === "" ||
+    subscriptionName === "" ||
     isNaN(subscriptionAmount) ||
     subscriptionAmount <= 0 ||
     !BILLING_CYCLES.includes(billingCycle)
@@ -43,7 +66,6 @@ export function handleSubscriptionSubmit(e, deps) {
     });
 
     setSubscription(updated);
-    subscriptionEditId = null;
   } else {
     const subscription = {
       id: Date.now(),
@@ -58,7 +80,7 @@ export function handleSubscriptionSubmit(e, deps) {
 
   renderSubscriptions();
   updateDashboard();
-  document.querySelector("#subscription-form").reset();
+  resetSubscriptionForm();
 }
 
 export function handleSubscriptionClick(e, deps) {
@@ -74,12 +96,14 @@ export function handleSubscriptionClick(e, deps) {
 
     const item = getSubscription().find((el) => el.id === id);
 
-    document.querySelector("#subscription-name").value = item.subscriptionName;
-    document.querySelector("#subscription-amount").value =
-      item.subscriptionAmount;
-    document.querySelector("#billing-cycle").value = item.billingCycle;
+    if (!item) return;
+
+    subscriptionNameInput.value = item.subscriptionName;
+    subscriptionAmountInput.value = item.subscriptionAmount;
+    billingCycleInput.value = item.billingCycle;
 
     subscriptionEditId = id;
+    setSubscriptionFormMode(true);
   }
 
   if (e.target.classList.contains("delete-sub")) {
@@ -90,5 +114,9 @@ export function handleSubscriptionClick(e, deps) {
     setSubscription(updated);
     renderSubscriptions();
     updateDashboard();
+
+    if (subscriptionEditId === id) {
+      resetSubscriptionForm();
+    }
   }
 }

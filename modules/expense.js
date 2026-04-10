@@ -1,6 +1,31 @@
 import { CATEGORIES } from "../utils/constants.js";
+import { getTodayDateValue } from "../utils/helpers.js";
 
 let expenseEditId = null;
+
+const expenseForm = document.querySelector("#expense-form");
+const expenseTitleInput = document.querySelector("#expense-title");
+const expenseAmountInput = document.querySelector("#expense-amount");
+const expenseCategoryInput = document.querySelector("#expense-category");
+const expenseDateInput = document.querySelector("#expense-date");
+const expenseSubmitButton = expenseForm.querySelector('button[type="submit"]');
+
+function setExpenseFormMode(isEditing) {
+  expenseForm.dataset.mode = isEditing ? "editing" : "create";
+  expenseSubmitButton.textContent = isEditing ? "Save Expense" : "Add Expense";
+}
+
+function resetExpenseForm() {
+  expenseForm.reset();
+  expenseDateInput.value = getTodayDateValue();
+  expenseEditId = null;
+  setExpenseFormMode(false);
+}
+
+export function initExpenseForm() {
+  expenseDateInput.value = getTodayDateValue();
+  setExpenseFormMode(false);
+}
 
 export function handleExpenseSubmit(e, deps) {
   e.preventDefault();
@@ -8,13 +33,13 @@ export function handleExpenseSubmit(e, deps) {
   const { getExpenses, saveExpenses, renderExpenses, updateDashboard } = deps;
 
   const saveData = getExpenses();
-  const title = document.querySelector("#expense-title").value;
-  const amount = Number(document.querySelector("#expense-amount").value);
-  const expenseCategory = document.querySelector("#expense-category").value;
-  const date = document.querySelector("#expense-date").value;
+  const title = expenseTitleInput.value.trim();
+  const amount = Number(expenseAmountInput.value);
+  const expenseCategory = expenseCategoryInput.value;
+  const date = expenseDateInput.value || getTodayDateValue();
 
   if (
-    title.trim() === "" ||
+    title === "" ||
     isNaN(amount) ||
     amount <= 0 ||
     !CATEGORIES.includes(expenseCategory)
@@ -25,13 +50,12 @@ export function handleExpenseSubmit(e, deps) {
   if (expenseEditId !== null) {
     const updatedExpense = saveData.map((item) => {
       if (item.id === expenseEditId) {
-        return { ...item, title, amount };
+        return { ...item, title, amount, expenseCategory, date };
       }
       return item;
     });
 
     saveExpenses(updatedExpense);
-    expenseEditId = null;
   } else {
     const expense = {
       id: Date.now(),
@@ -47,7 +71,7 @@ export function handleExpenseSubmit(e, deps) {
 
   renderExpenses();
   updateDashboard();
-  document.querySelector("#expense-form").reset();
+  resetExpenseForm();
 }
 
 export function handleExpenseClick(e, deps) {
@@ -58,10 +82,15 @@ export function handleExpenseClick(e, deps) {
 
     const item = getExpenses().find((el) => el.id === id);
 
-    document.querySelector("#expense-title").value = item.title;
-    document.querySelector("#expense-amount").value = item.amount;
+    if (!item) return;
+
+    expenseTitleInput.value = item.title;
+    expenseAmountInput.value = item.amount;
+    expenseCategoryInput.value = item.expenseCategory;
+    expenseDateInput.value = item.date || getTodayDateValue();
 
     expenseEditId = id;
+    setExpenseFormMode(true);
   }
 
   if (e.target.classList.contains("delete")) {
@@ -72,5 +101,9 @@ export function handleExpenseClick(e, deps) {
     saveExpenses(newExpenses);
     renderExpenses();
     updateDashboard();
+
+    if (expenseEditId === id) {
+      resetExpenseForm();
+    }
   }
 }

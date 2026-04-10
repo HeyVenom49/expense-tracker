@@ -1,111 +1,236 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Expense Tracker</title>
     <link rel="stylesheet" href="style.css">
-</head>
-
-<body>
-
+  </head>
+  <body>
     <header class="header">
-        <p class="header-kicker">Live money pulse</p>
-        <h1>Smart Expense & Subscription Tracker</h1>
-        <p class="header-copy">Track daily spending, spot risky budget drift fast, and make the warning state impossible to miss.</p>
+      <p class="header-kicker">Live money pulse</p>
+      <h1>Smart Expense & Subscription Tracker</h1>
+      <p class="header-copy">
+        Track daily spending, spot risky budget drift fast, and keep your
+        recurring payments visible before they pile up.
+      </p>
+
+      <div class="header-actions">
+        <button
+          id="open-analytics"
+          type="button"
+          aria-controls="analytics-overlay"
+        >
+          Open Analytics
+        </button>
+        <p class="header-note">
+          See category trends and subscription pressure in one quick snapshot.
+        </p>
+      </div>
+
+      <section class="hero-stats" aria-label="Tracker overview">
+        <article class="hero-stat">
+          <p id="hero-tracked-count">0</p>
+          <span>Tracked items</span>
+        </article>
+        <article class="hero-stat">
+          <p id="hero-subscription-count">0</p>
+          <span>Active subscriptions</span>
+        </article>
+        <article class="hero-stat" id="hero-budget-stat" data-state="idle">
+          <p id="hero-budget-health">Set budget</p>
+          <span>Budget health</span>
+        </article>
+      </section>
     </header>
 
     <main id="main">
+      <section id="dashboard">
+        <div class="card card-expense">
+          <h3>Total Expense</h3>
+          <p id="total-expense">₹0</p>
+          <p class="card-footnote" id="expense-meta">0 expenses logged</p>
+        </div>
 
-        <!-- Dashboard -->
-        <section id="dashboard">
+        <div class="card card-budget" id="budget-card" data-state="idle">
+          <h3>Total Budget</h3>
+          <p id="total-budget">₹0</p>
+          <p class="card-footnote" id="budget-meta">
+            Add a budget target to unlock pacing insights.
+          </p>
+          <div class="budget-actions">
+            <input
+              type="number"
+              id="budget-input"
+              placeholder="Set budget"
+              min="0"
+              step="0.01"
+            >
+            <button type="button" id="set-budget-btn">Set Budget</button>
+          </div>
+        </div>
 
-            <div class="card card-expense">
-                <h3>Total Expense</h3>
-                <p id="total-expense">₹0</p>
-            </div>
+        <div class="card card-subscription">
+          <h3>Total Subscriptions</h3>
+          <p id="total-subscription">₹0</p>
+          <p class="card-footnote" id="subscription-meta">
+            0 active services
+          </p>
+        </div>
+      </section>
 
-            <div class="card card-budget" id="budget-card">
-                <h3>Total Budget</h3>
-                <p id="total-budget">₹0</p>
-                <div class="budget-actions">
-                    <input type="number" id="budget-input" placeholder="Set Budget">
-                    <button type="button" id="set-budget-btn">Set Budget</button>
-                </div>
-            </div>
+      <section id="expenses" aria-labelledby="expenses-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">One-time spend</p>
+            <h2 id="expenses-title">Add Expense</h2>
+          </div>
+          <p class="section-copy">
+            Capture each purchase with a category and date so your budget stays
+            honest.
+          </p>
+        </div>
 
-            <div class="card card-subscription">
-                <h3>Total Subscriptions</h3>
-                <p id="total-subscription">₹0</p>
-            </div>
+        <form id="expense-form">
+          <label for="expense-title">Expense Title</label>
+          <input
+            type="text"
+            id="expense-title"
+            placeholder="Enter title"
+            required
+          >
 
-        </section>
+          <label for="expense-amount">Amount</label>
+          <input
+            type="number"
+            id="expense-amount"
+            placeholder="Enter amount"
+            min="0"
+            step="0.01"
+            required
+          >
 
-        <!-- Expense Module -->
-        <section id="expenses">
+          <label for="expense-category">Category</label>
+          <select id="expense-category">
+            <option value="food">Food</option>
+            <option value="travel">Travel</option>
+            <option value="shopping">Shopping</option>
+          </select>
 
-            <h2>Add Expense</h2>
+          <label for="expense-date">Date</label>
+          <input type="date" id="expense-date">
 
-            <form id="expense-form">
+          <button type="submit">Add Expense</button>
+        </form>
 
-                <label for="expense-title">Expense Title</label>
-                <input type="text" id="expense-title" placeholder="Enter title" required>
+        <h2 class="list-heading">Expense List</h2>
+        <ul id="expense-list"></ul>
+      </section>
 
-                <label for="expense-amount">Amount</label>
-                <input type="number" id="expense-amount" placeholder="Enter amount" required>
+      <section id="subscriptions" aria-labelledby="subscriptions-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Recurring spend</p>
+            <h2 id="subscriptions-title">Add Subscription</h2>
+          </div>
+          <p class="section-copy">
+            Keep your monthly and yearly services visible so recurring costs do
+            not sneak past your budget.
+          </p>
+        </div>
 
-                <label for="expense-category">Category</label>
-                <select id="expense-category">
-                    <option value="food">Food</option>
-                    <option value="travel">Travel</option>
-                    <option value="shopping">Shopping</option>
-                </select>
+        <form id="subscription-form">
+          <label for="subscription-name">Service Name</label>
+          <input
+            type="text"
+            id="subscription-name"
+            placeholder="e.g. Netflix"
+            required
+          >
 
-                <label for="expense-date">Date</label>
-                <input type="date" id="expense-date">
+          <label for="subscription-amount">Amount</label>
+          <input
+            type="number"
+            id="subscription-amount"
+            placeholder="Enter amount"
+            min="0"
+            step="0.01"
+            required
+          >
 
-                <button type="submit">Add Expense</button>
+          <label for="billing-cycle">Billing Cycle</label>
+          <select id="billing-cycle">
+            <option value="monthly">Monthly</option>
+            <option value="yearly">Yearly</option>
+          </select>
 
-            </form>
+          <button type="submit">Add Subscription</button>
+        </form>
 
-            <h2>Expense List</h2>
-            <ul id="expense-list"></ul>
-
-        </section>
-
-        <!-- Subscription Module -->
-        <section id="subscriptions">
-
-            <h2>Add Subscription</h2>
-
-            <form id="subscription-form">
-
-                <label for="subscription-name">Service Name</label>
-                <input type="text" id="subscription-name" placeholder="e.g. Netflix" required>
-
-                <label for="subscription-amount">Amount</label>
-                <input type="number" id="subscription-amount" placeholder="Enter amount" required>
-
-                <label for="billing-cycle">Billing Cycle</label>
-                <select id="billing-cycle">
-                    <option value="monthly">Monthly</option>
-                    <option value="yearly">Yearly</option>
-                </select>
-
-                <button type="submit">Add Subscription</button>
-
-            </form>
-
-            <h2>Subscription List</h2>
-            <ul id="subscription-list"></ul>
-
-        </section>
-
+        <h2 class="list-heading">Subscription List</h2>
+        <ul id="subscription-list"></ul>
+      </section>
     </main>
 
+    <div id="analytics-overlay" class="hidden" aria-hidden="true">
+      <div
+        id="analytics-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="analytics-title"
+      >
+        <button
+          id="close-analytics"
+          type="button"
+          aria-label="Close analytics"
+        >
+          ✕
+        </button>
+
+        <div class="analytics-header">
+          <p class="section-kicker">Snapshot</p>
+          <h2 id="analytics-title">Spending Analytics</h2>
+          <p class="analytics-copy">
+            Review your biggest categories and recurring services before making
+            the next budget call.
+          </p>
+        </div>
+
+        <div class="analytics-summary">
+          <article class="analytics-stat">
+            <span>Total expenses</span>
+            <strong id="analytics-expense-total">₹0</strong>
+          </article>
+          <article class="analytics-stat">
+            <span>Total subscriptions</span>
+            <strong id="analytics-subscription-total">₹0</strong>
+          </article>
+          <article class="analytics-stat">
+            <span>Items tracked</span>
+            <strong id="analytics-tracked-count">0</strong>
+          </article>
+        </div>
+
+        <div class="analytics-grid">
+          <section class="analytics-panel">
+            <div class="analytics-panel-head">
+              <h3>Expense Analytics</h3>
+              <p>By category</p>
+            </div>
+            <ul id="expense-analytics-list"></ul>
+          </section>
+
+          <section class="analytics-panel">
+            <div class="analytics-panel-head">
+              <h3>Subscription Analytics</h3>
+              <p>By service</p>
+            </div>
+            <ul id="subscription-analytics-list"></ul>
+          </section>
+        </div>
+      </div>
+    </div>
+
     <script type="module" src="app.js"></script>
-
-</body>
-
+  </body>
 </html>
